@@ -137,9 +137,11 @@ class Program
 
     static void PlaySound()
     {
+        int amb_amount = 8;
+        int amb = new Random().Next(1, amb_amount + 1);
         try
         {
-            string url = "https://raw.githubusercontent.com/your-github-repo/Assets/Sounds/amb1.wav";
+            string url = "https://github.com/Boleklolo/TelemetryMon/raw/refs/heads/main/Assets/Sounds/amb" + amb + ".wav";
             string path = Path.Combine(Path.GetTempPath(), "creepy.wav");
 
             // Download if not exists
