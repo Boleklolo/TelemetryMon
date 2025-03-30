@@ -1,0 +1,14 @@
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Debug\net8.0\Telemetry Monitoring.exe
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Debug\net8.0\Telemetry Monitoring.deps.json
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Debug\net8.0\Telemetry Monitoring.runtimeconfig.json
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Debug\net8.0\Telemetry Monitoring.dll
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Debug\net8.0\Telemetry Monitoring.pdb
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0\Telemetry Monitoring.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0\Telemetry Monitoring.AssemblyInfoInputs.cache
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0\Telemetry Monitoring.AssemblyInfo.cs
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0\Telemetry Monitoring.csproj.CoreCompileInputs.cache
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0\Telemetry Monitoring.dll
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0\refint\Telemetry Monitoring.dll
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0\Telemetry Monitoring.pdb
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0\Telemetry Monitoring.genruntimeconfig.cache
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0\ref\Telemetry Monitoring.dll
