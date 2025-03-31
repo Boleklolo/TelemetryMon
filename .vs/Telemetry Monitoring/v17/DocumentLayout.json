@@ -5,6 +5,10 @@
     {
       "AbsoluteMoniker": "D:0:0:{3FD8F3E2-4315-48AA-A656-C045C201A5ED}|Telemetry Monitoring.csproj|c:\\users\\mateu\\source\\repos\\telemetry monitoring\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{3FD8F3E2-4315-48AA-A656-C045C201A5ED}|Telemetry Monitoring.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3FD8F3E2-4315-48AA-A656-C045C201A5ED}|Telemetry Monitoring.csproj|c:\\users\\mateu\\source\\repos\\telemetry monitoring\\telemetry monitoring.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{3FD8F3E2-4315-48AA-A656-C045C201A5ED}|Telemetry Monitoring.csproj|solutionrelative:telemetry monitoring.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,8 +18,21 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Telemetry Monitoring",
+              "DocumentMoniker": "C:\\Users\\mateu\\source\\repos\\Telemetry Monitoring\\Telemetry Monitoring.csproj",
+              "RelativeDocumentMoniker": "Telemetry Monitoring.csproj",
+              "ToolTip": "C:\\Users\\mateu\\source\\repos\\Telemetry Monitoring\\Telemetry Monitoring.csproj",
+              "RelativeToolTip": "Telemetry Monitoring.csproj",
+              "ViewState": "AQIAAAgAAAAAAAAAAAAwwBsAAAAjAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-03-31T17:34:14.965Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -24,10 +41,9 @@
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Users\\mateu\\source\\repos\\Telemetry Monitoring\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AQIAAFwAAAAAAAAAAAAswIsAAAAaAAAA",
+              "ViewState": "AQIAAIgBAAAAAAAAAAAAAL0BAAAxAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-30T18:41:32.405Z",
-              "IsPinned": true,
               "EditorCaption": ""
             }
           ]
