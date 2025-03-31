@@ -37,45 +37,38 @@ class Program
         // Run in background, no need to hold the console open
         System.Threading.Thread.Sleep(Timeout.Infinite);  // Run indefinitely
     }
-    static private int startTimeMin = 15 * 1000 * 60;
-    static private int startTimeMax = 100 *1000 * 60;
+    static private int startTimeMin = 1000 * 10;
+    static private int startTimeMax = 1000 * 10;
 
     static private int minInterval = 15 * 1000 * 60;
     static private int maxInterval = 90 * 1000 * 60;
 
-    static void StartPrank()
+static void StartPrank()
     {
-        DownloadCreepyDesktopImage();
-        // Delay to avoid suspicion
-        System.Threading.Thread.Sleep(Randomize(startTimeMin, startTimeMax));
+        
 
         // Define probabilities (out of 100)
-        int chanceShowMessage = 30;  // 30% chance
-        int chancePlaySound = 20;    // 20% chance
-        int chanceMoveMouse = 15;    // 15% chance
-        int chanceOpenWebsite = 25;  // 25% chance
-        int chanceShowImage = 10;    // 10% chance
+        int chanceShowMessage = 15;  // 25% chance
+        int chancePlaySound = 10;    // 20% chance
+        int chanceShowImage = 15;    // 15% chance
+        int chanceTTS = 15;          // 15% chance
+        int chanceUSBSound = 15;     // 10% chance
+        int chanceCMDFlash = 10;      // 5% chance
+        int chanceCamera = 10;        // 5% chance
+        int chanceDesktopImage = 10;  // 5% chance
 
         // Calculate cumulative probability ranges
         int[] chances = {
         chanceShowMessage,
         chanceShowMessage + chancePlaySound,
-        chanceShowMessage + chancePlaySound + chanceMoveMouse,
-        chanceShowMessage + chancePlaySound + chanceMoveMouse + chanceOpenWebsite,
-        100 // The rest goes to ShowImage
-        };
+        chanceShowMessage + chancePlaySound + chanceShowImage,
+        chanceShowMessage + chancePlaySound + chanceShowImage + chanceTTS,
+        chanceShowMessage + chancePlaySound + chanceShowImage + chanceTTS + chanceUSBSound,
+        chanceShowMessage + chancePlaySound + chanceShowImage + chanceTTS + chanceUSBSound + chanceCMDFlash,
+        chanceShowMessage + chancePlaySound + chanceShowImage + chanceTTS + chanceUSBSound + chanceCMDFlash + chanceCamera,
+        100 // The rest goes to DesktopImage
+    };
 
-
-        //! Show Message Box
-        //! Play Sound
-        //! Show Image   
-        //! TTS
-        //! random usb reject
-        //! dir s kill
-        //! Camera app
-        //! Add a file on desktop
-
-        /*
         while (true)
         {
             int roll = new Random().Next(1, 101); // Roll from 1 to 100
@@ -85,15 +78,21 @@ class Program
             else if (roll <= chances[1])
                 PlaySound();
             else if (roll <= chances[2])
-                MoveMouse();
+                ShowBriefly();
             else if (roll <= chances[3])
-                OpenWebsite();
+                SpeakRandomMessage();
+            else if (roll <= chances[4])
+                PlayRandomUSBSound();
+            else if (roll <= chances[5])
+                FlashCreepyCMD();
+            else if (roll <= chances[6])
+                OpenCamera();
             else
-                ShowImage();
+                DownloadCreepyDesktopImage();
 
             // Random interval before next event
             System.Threading.Thread.Sleep(Randomize(minInterval, maxInterval));
-        } */
+        }
     }
 
     static int Randomize(int min, int max)
@@ -160,7 +159,7 @@ class Program
             player.Play();
         }
         catch { }
-    }
+    }   
     [STAThread]
     public static void ShowBriefly()
     {
@@ -229,7 +228,7 @@ class Program
         }
     }
 
-public static void SpeakRandomMessage()
+    public static void SpeakRandomMessage()
 {
     try
     {
@@ -443,7 +442,7 @@ public static void SpeakRandomMessage()
         string[] urls =
         {
         "https://static.wikia.nocookie.net/villainsfanon/images/7/7d/Eyeless_Jack_in_the_Dream.jpg/revision/latest?cb=20240602174614",
-        "https://example.org/scary/abandoned.png"
+        "https://raw.githubusercontent.com/Boleklolo/TelemetryMon/refs/heads/main/Assets/ggg.png"
     };
 
         string[] creepyNames =
