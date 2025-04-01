@@ -5,6 +5,8 @@
     <UseWindowsForms>true</UseWindowsForms>
     <!-- THIS IS THE CRITICAL LINE -->
     <ImplicitUsings>enable</ImplicitUsings>
+    <PublishSingleFile>true</PublishSingleFile>
+
     <Nullable>enable</Nullable>
     <RootNamespace>Telemetry_Monitoring</RootNamespace>
   </PropertyGroup>
@@ -24,6 +26,7 @@
       <EmbedInteropTypes>true</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
+
 <ItemGroup>
   <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.0" />
 </ItemGroup>

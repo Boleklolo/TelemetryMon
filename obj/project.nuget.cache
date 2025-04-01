@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "xrt99PYGT/Q=",
+  "dgSpecHash": "uHRowuMi+os=",
   "success": true,
   "projectFilePath": "C:\\Users\\mateu\\source\\repos\\Telemetry Monitoring\\Telemetry Monitoring.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\mateu\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\5.0.0\\microsoft.bcl.asyncinterfaces.5.0.0.nupkg.sha512",
     "C:\\Users\\mateu\\.nuget\\packages\\microsoft.extensions.objectpool\\5.0.10\\microsoft.extensions.objectpool.5.0.10.nupkg.sha512",
+    "C:\\Users\\mateu\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.14\\microsoft.net.illink.tasks.8.0.14.nupkg.sha512",
     "C:\\Users\\mateu\\.nuget\\packages\\microsoft.netcore.platforms\\3.1.0\\microsoft.netcore.platforms.3.1.0.nupkg.sha512",
     "C:\\Users\\mateu\\.nuget\\packages\\microsoft.win32.registry\\4.7.0\\microsoft.win32.registry.4.7.0.nupkg.sha512",
     "C:\\Users\\mateu\\.nuget\\packages\\microsoft.win32.registry.accesscontrol\\8.0.0\\microsoft.win32.registry.accesscontrol.8.0.0.nupkg.sha512",

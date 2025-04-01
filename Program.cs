@@ -28,6 +28,7 @@ class Program
     [STAThread]
     static void Main()
     {
+
         // Hide Console Window to make it run silently
         ShowWindow(GetConsoleWindow(), SW_HIDE);
 
@@ -37,15 +38,14 @@ class Program
         // Run in background, no need to hold the console open
         System.Threading.Thread.Sleep(Timeout.Infinite);  // Run indefinitely
     }
-    static private int startTimeMin = 1000 * 10;
-    static private int startTimeMax = 1000 * 10;
+    static private int startTimeMin = 10 * 1000 * 10;
+    static private int startTimeMax = 100 * 1000 * 10;
 
     static private int minInterval = 15 * 1000 * 60;
     static private int maxInterval = 90 * 1000 * 60;
 
 static void StartPrank()
     {
-        
 
         // Define probabilities (out of 100)
         int chanceShowMessage = 15;  // 25% chance

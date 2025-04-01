@@ -2,19 +2,6 @@ C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\Tele
 C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\Telemetry Monitoring.deps.json
 C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\Telemetry Monitoring.runtimeconfig.json
 C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\Telemetry Monitoring.dll
-C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\System.Windows.Extensions.dll
-C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\runtimes\win\lib\net8.0\System.Windows.Extensions.dll
-C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Telemetry Monitoring.csproj.AssemblyReference.cache
-C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Telemetry Monitoring.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Telemetry Monitoring.AssemblyInfoInputs.cache
-C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Telemetry Monitoring.AssemblyInfo.cs
-C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Telemetry Monitoring.csproj.CoreCompileInputs.cache
-C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Telemetry Monitoring.sourcelink.json
-C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Telemetr.A9F294A8.Up2Date
-C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Telemetry Monitoring.dll
-C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\refint\Telemetry Monitoring.dll
-C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Telemetry Monitoring.genruntimeconfig.cache
-C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\ref\Telemetry Monitoring.dll
 C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\Microsoft.Bcl.AsyncInterfaces.dll
 C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\Microsoft.Extensions.ObjectPool.dll
 C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\System.ComponentModel.Composition.dll
@@ -39,6 +26,7 @@ C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\Syst
 C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\System.ServiceProcess.ServiceController.dll
 C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\System.Speech.dll
 C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\System.Web.Services.Description.dll
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\System.Windows.Extensions.dll
 C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\cs\System.Private.ServiceModel.resources.dll
 C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\de\System.Private.ServiceModel.resources.dll
 C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\es\System.Private.ServiceModel.resources.dll
@@ -94,5 +82,17 @@ C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\runt
 C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\runtimes\win\lib\net8.0\System.Runtime.Caching.dll
 C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\runtimes\win\lib\net8.0\System.ServiceProcess.ServiceController.dll
 C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\runtimes\win\lib\net8.0\System.Speech.dll
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\runtimes\win\lib\net8.0\System.Windows.Extensions.dll
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Telemetry Monitoring.csproj.AssemblyReference.cache
 C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Interop.SpeechLib.dll
 C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Telemetry Monitoring.csproj.ResolveComReference.cache
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Telemetry Monitoring.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Telemetry Monitoring.AssemblyInfoInputs.cache
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Telemetry Monitoring.AssemblyInfo.cs
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Telemetry Monitoring.csproj.CoreCompileInputs.cache
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Telemetry Monitoring.sourcelink.json
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Telemetr.A9F294A8.Up2Date
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Telemetry Monitoring.dll
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\refint\Telemetry Monitoring.dll
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\Telemetry Monitoring.genruntimeconfig.cache
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Release\net8.0-windows\ref\Telemetry Monitoring.dll

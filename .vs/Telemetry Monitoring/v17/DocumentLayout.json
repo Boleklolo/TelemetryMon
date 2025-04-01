@@ -18,20 +18,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 0,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Telemetry Monitoring.csproj",
-              "DocumentMoniker": "C:\\Users\\mateu\\source\\repos\\Telemetry Monitoring\\Telemetry Monitoring.csproj",
-              "RelativeDocumentMoniker": "Telemetry Monitoring.csproj",
-              "ToolTip": "C:\\Users\\mateu\\source\\repos\\Telemetry Monitoring\\Telemetry Monitoring.csproj",
-              "RelativeToolTip": "Telemetry Monitoring.csproj",
-              "ViewState": "AQIAAAgAAAAAAAAAAAAwwBsAAAAjAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-03-31T17:34:14.965Z"
-            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -40,9 +28,22 @@
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Users\\mateu\\source\\repos\\Telemetry Monitoring\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AQIAABUAAAAAAAAAAAAYwC8AAAAIAAAA",
+              "ViewState": "AQIAACgAAAAAAAAAAAAkwC8AAAAFAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-30T18:41:32.405Z",
+              "WhenOpened": "2025-04-01T18:32:54.918Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Telemetry Monitoring",
+              "DocumentMoniker": "C:\\Users\\mateu\\source\\repos\\Telemetry Monitoring\\Telemetry Monitoring.csproj",
+              "RelativeDocumentMoniker": "Telemetry Monitoring.csproj",
+              "ToolTip": "C:\\Users\\mateu\\source\\repos\\Telemetry Monitoring\\Telemetry Monitoring.csproj",
+              "RelativeToolTip": "Telemetry Monitoring.csproj",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-04-01T18:27:03.436Z",
               "EditorCaption": ""
             }
           ]
