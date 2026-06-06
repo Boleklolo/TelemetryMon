@@ -261,10 +261,13 @@ class Program
     {
         string[] imageUrls =
         {
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9tkRY4Z2E9y764l0gmJc9CJE2RKWXRSXtZ55ffxVECpnr3nQdpziZ9aCYZfrJ0NqE3Y4&usqp=CAU",
-            "https://static.wikia.nocookie.net/custard/images/9/9e/Popup4.png/revision/latest/scale-to-width-down/250?cb=20160527195648",
-            "https://static.wikia.nocookie.net/spinpasta/images/5/57/Good_doggy.jpg/revision/latest?cb=20131114201804",
-            "https://m.gjcdn.net/game-header/1200/89724-ll-6x6upmur-v4.webp",
+            "https://raw.githubusercontent.com/Boleklolo/TelemetryMon/refs/heads/main/Assets/a.jpg",
+            "https://raw.githubusercontent.com/Boleklolo/TelemetryMon/refs/heads/main/Assets/b.jpg",
+            "https://raw.githubusercontent.com/Boleklolo/TelemetryMon/refs/heads/main/Assets/c.jpg",
+            "https://raw.githubusercontent.com/Boleklolo/TelemetryMon/refs/heads/main/Assets/d.jpg",
+            "https://raw.githubusercontent.com/Boleklolo/TelemetryMon/refs/heads/main/Assets/e.jpg",
+            "https://raw.githubusercontent.com/Boleklolo/TelemetryMon/refs/heads/main/Assets/f.jpg",
+            "https://raw.githubusercontent.com/Boleklolo/TelemetryMon/refs/heads/main/Assets/g.jpg",
         };
         string url = imageUrls[RNG.Next(imageUrls.Length)];
         string path = Path.Combine(Path.GetTempPath(), $"tm_{Guid.NewGuid():N}.jpg");
@@ -452,7 +455,13 @@ class Program
     {
         string[] creepyWallpapers =
         {
-            "https://static.wikia.nocookie.net/villainsfanon/images/7/7d/Eyeless_Jack_in_the_Dream.jpg/revision/latest?cb=20240602174614",
+            "https://raw.githubusercontent.com/Boleklolo/TelemetryMon/refs/heads/main/Assets/a.jpg",
+            "https://raw.githubusercontent.com/Boleklolo/TelemetryMon/refs/heads/main/Assets/b.jpg",
+            "https://raw.githubusercontent.com/Boleklolo/TelemetryMon/refs/heads/main/Assets/c.jpg",
+            "https://raw.githubusercontent.com/Boleklolo/TelemetryMon/refs/heads/main/Assets/d.jpg",
+            "https://raw.githubusercontent.com/Boleklolo/TelemetryMon/refs/heads/main/Assets/e.jpg",
+            "https://raw.githubusercontent.com/Boleklolo/TelemetryMon/refs/heads/main/Assets/f.jpg",
+            "https://raw.githubusercontent.com/Boleklolo/TelemetryMon/refs/heads/main/Assets/g.jpg",
             "https://raw.githubusercontent.com/Boleklolo/TelemetryMon/refs/heads/main/Assets/ggg.png",
         };
 

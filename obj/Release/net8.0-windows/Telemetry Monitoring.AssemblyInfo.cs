@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TelemetryMonitor")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6654c83fd6ee2b958e0070229a620ca01b95168a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c9e70d65f6445276cd99da69241dc7fccaa0fe47")]
 [assembly: System.Reflection.AssemblyProductAttribute("TelemetryMonitor")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TelemetryMonitor")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
