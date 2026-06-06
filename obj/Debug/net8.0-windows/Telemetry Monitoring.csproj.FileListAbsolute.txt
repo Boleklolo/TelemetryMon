@@ -1,0 +1,19 @@
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Debug\net8.0-windows\TelemetryMonitor.exe
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Debug\net8.0-windows\TelemetryMonitor.deps.json
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Debug\net8.0-windows\TelemetryMonitor.runtimeconfig.json
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Debug\net8.0-windows\TelemetryMonitor.dll
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Debug\net8.0-windows\TelemetryMonitor.pdb
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Debug\net8.0-windows\System.Speech.dll
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Debug\net8.0-windows\runtimes\win\lib\net8.0\System.Speech.dll
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0-windows\Telemetry Monitoring.csproj.AssemblyReference.cache
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0-windows\Telemetry Monitoring.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0-windows\Telemetry Monitoring.AssemblyInfoInputs.cache
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0-windows\Telemetry Monitoring.AssemblyInfo.cs
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0-windows\Telemetry Monitoring.csproj.CoreCompileInputs.cache
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0-windows\Telemetry Monitoring.sourcelink.json
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0-windows\Telemetr.A9F294A8.Up2Date
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0-windows\TelemetryMonitor.dll
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0-windows\refint\TelemetryMonitor.dll
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0-windows\TelemetryMonitor.pdb
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0-windows\Telemetry Monitoring.genruntimeconfig.cache
+C:\Users\mateu\source\repos\Telemetry Monitoring\obj\Debug\net8.0-windows\ref\TelemetryMonitor.dll

