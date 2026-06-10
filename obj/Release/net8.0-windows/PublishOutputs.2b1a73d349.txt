@@ -1,0 +1,7 @@
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\publish\TelemetryMonitor.exe
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\publish\TelemetryMonitor.dll
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\publish\TelemetryMonitor.deps.json
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\publish\TelemetryMonitor.runtimeconfig.json
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\publish\TelemetryMonitor.pdb
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\publish\System.Speech.dll
+C:\Users\mateu\source\repos\Telemetry Monitoring\bin\Release\net8.0-windows\publish\runtimes\win\lib\net8.0\System.Speech.dll

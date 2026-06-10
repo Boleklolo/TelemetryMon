@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\mateu\\source\\repos\\Telemetry Monitoring\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{3FD8F3E2-4315-48AA-A656-C045C201A5ED}|Telemetry Monitoring.csproj|c:\\users\\mateu\\source\\repos\\telemetry monitoring\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3FD8F3E2-4315-48AA-A656-C045C201A5ED}|Telemetry Monitoring.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{3FD8F3E2-4315-48AA-A656-C045C201A5ED}|Telemetry Monitoring.csproj|c:\\users\\mateu\\source\\repos\\telemetry monitoring\\telemetry monitoring.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
       "RelativeMoniker": "D:0:0:{3FD8F3E2-4315-48AA-A656-C045C201A5ED}|Telemetry Monitoring.csproj|solutionrelative:telemetry monitoring.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3FD8F3E2-4315-48AA-A656-C045C201A5ED}|Telemetry Monitoring.csproj|c:\\users\\mateu\\source\\repos\\telemetry monitoring\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3FD8F3E2-4315-48AA-A656-C045C201A5ED}|Telemetry Monitoring.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{3FD8F3E2-4315-48AA-A656-C045C201A5ED}|Telemetry Monitoring.csproj|c:\\users\\mateu\\source\\repos\\telemetry monitoring\\debugrunner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -22,7 +22,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
@@ -38,28 +38,29 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\mateu\\source\\repos\\Telemetry Monitoring\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Users\\mateu\\source\\repos\\Telemetry Monitoring\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAEoCAAAAAAAAAAAAwNQBAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAB8AAAAAAAAAAAAIwDwAAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-01T18:32:54.918Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "Telemetry Monitoring.csproj",
               "DocumentMoniker": "C:\\Users\\mateu\\source\\repos\\Telemetry Monitoring\\Telemetry Monitoring.csproj",
               "RelativeDocumentMoniker": "Telemetry Monitoring.csproj",
               "ToolTip": "C:\\Users\\mateu\\source\\repos\\Telemetry Monitoring\\Telemetry Monitoring.csproj",
               "RelativeToolTip": "Telemetry Monitoring.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAATAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-04-01T18:27:03.436Z"
+              "WhenOpened": "2025-04-01T18:27:03.436Z",
+              "EditorCaption": ""
             }
           ]
         }

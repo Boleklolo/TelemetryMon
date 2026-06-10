@@ -53,48 +53,53 @@ class Program
     static string originalWallpaper = "";
 
     // ─────────────────────────────────────────────────────────────────────────
-    //[STAThread]
-    //static void Main()
-    //{
-    //    // Mutex — only one instance
-    //    using var mutex = new Mutex(true, "TelemetryMonitor_SingleInstance", out bool isNew);
-    //    if (!isNew) return;
-
-    //    ShowWindow(GetConsoleWindow(), SW_HIDE);
-
-    //    // Write install date if first run
-    //    EnsureInstallDate();
-
-    //    // Save current wallpaper path before we ever touch it
-    //    originalWallpaper = GetCurrentWallpaper();
-
-    //    // Quiet period check
-    //    if (!QuietPeriodElapsed())
-    //    {
-    //        // Sleep until quiet period ends, then continue
-    //        var remaining = QuietPeriodRemaining();
-    //        Thread.Sleep(remaining);
-    //    }
-
-    //    // First-run-after-quiet-period flag → trigger special "Another reinstall?" sequence
-    //    bool isFirstAfterQuiet = !WasFirstRunFlagSet();
-    //    if (isFirstAfterQuiet)
-    //    {
-    //        SetFirstRunFlag();
-    //        int delay = RNG.Next(FIRST_EVENT_DELAY_MIN, FIRST_EVENT_DELAY_MAX);
-    //        Thread.Sleep(delay);
-    //        ReinstallGreeting();
-    //    }
-
-    //    // Main loop
-    //    RunLoop();
-    //}
     [STAThread]
     static void Main()
     {
-        ShowWindow(GetConsoleWindow(), 5); // show console for the menu
-        DebugRunner.Run();
+        // Mutex — only one instance
+        using var mutex = new Mutex(true, "TelemetryMonitor_SingleInstance", out bool isNew);
+        if (!isNew) return;
+
+        ShowWindow(GetConsoleWindow(), SW_HIDE);
+
+        // Write install date if first run
+        EnsureInstallDate();
+
+        // Save current wallpaper path before we ever touch it
+        originalWallpaper = GetCurrentWallpaper();
+
+        // Quiet period check
+        if (!QuietPeriodElapsed())
+        {
+            // Sleep until quiet period ends, then continue
+            var remaining = QuietPeriodRemaining();
+            Thread.Sleep(remaining);
+        }
+
+        // First-run-after-quiet-period flag → trigger special "Another reinstall?" sequence
+        bool isFirstAfterQuiet = !WasFirstRunFlagSet();
+        if (isFirstAfterQuiet)
+        {
+            SetFirstRunFlag();
+            int delay = RNG.Next(FIRST_EVENT_DELAY_MIN, FIRST_EVENT_DELAY_MAX);
+            Thread.Sleep(delay);
+            ReinstallGreeting();
+        }
+
+        // Main loop
+        RunLoop();
     }
+
+
+    //DEBUG
+
+
+    //[STAThread]
+    //static void Main()
+    //{
+    //    ShowWindow(GetConsoleWindow(), 5); // show console for the menu
+    //    DebugRunner.Run();
+    //}
     // ─── Install date / quiet period ─────────────────────────────────────────
     static void EnsureInstallDate()
     {
@@ -306,6 +311,7 @@ class Program
                 form.Show();
 
                 Application.DoEvents();
+                new Thread(() => PlayAmbientSound()).Start();
                 Thread.Sleep(RNG.Next(300, 800));
                 form.Close();
             });
